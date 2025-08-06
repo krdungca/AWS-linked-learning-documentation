@@ -43,6 +43,14 @@ $git branch -m master main
 Store github creds (less secure) by:
 $ git config -global credential.helper store
 
+Store github creds (a bit more secure) by cache for a limited-time:
+$ git config --global credential.helper cache
+
+default time=15minutes
+change it to custom time by:
+$ git config --global credential.helper 'cache --timeout=3600'
+#3600 here is in seconds
+
 [F]
 See Differences Between File Versions
 1. See UNCOMMITTED changes by:
@@ -54,3 +62,4 @@ $git diff --cached
 [g]
 Blame -> used to view which user edited a specific file:
 $ git blame filename.txt
+

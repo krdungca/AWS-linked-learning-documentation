@@ -1,0 +1,17 @@
+try to define:
+
+git init
+.gitignore
+git remote add https://link/link.git
+git remote -v
+git add .
+git status
+git commit  -m "message"
+git push -u origin main
+git branch -m master main
+git config --global credential.helper store
+git diff
+git diff --cached
+git blame filename.txt
+git log 
+git log -p filename.txt
