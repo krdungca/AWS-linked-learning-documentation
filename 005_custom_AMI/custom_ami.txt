@@ -1,0 +1,7 @@
+learned custom ami
+1. create an ec2-instance
+2. install necessary softwares etc. etc.
+3. right-click and create an image
+4. wait for image to finish
+5. we can launch an ec2 instance from the AMI: can be much faster since the programs are already loaded
+

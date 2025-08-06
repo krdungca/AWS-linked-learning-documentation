@@ -7,6 +7,7 @@ aws ec2 run-instances --image-id "ami-0d8ec96c89ad62005" \
 --credit-specification '{"CpuCredits":"standard"}' \
 --metadata-options '{"HttpEndpoint":"enabled","HttpPutResponseHopLimit":2,"HttpTokens":"required"}' \
 --private-dns-name-options '{"HostnameType":"ip-name","EnableResourceNameDnsARecord":true,"EnableResourceNameDnsAAAARecord":false}' \
+--block-device-mappings '[{"DeviceName":"/dev/xvda","Ebs":{"DeleteOnTermination":true}}]' \
 --count "1" \
 --region ap-southeast-1
 
