@@ -36,3 +36,7 @@ legacy git may refer to local main branch to 'master', change it to main by:
 $git branch -m master main
 
 
+
+[E]
+Store github creds (less secure) by:
+$ git config -global credential.helper store
