@@ -1,4 +1,4 @@
-1. git init -> turn it into a version controlled folder
+1.  git init -> turn it into a version controlled folder
 2. .git folder -> contains files for git to work
 3. .gitignore-> file that contains which files to ignore and not commit/push to github
 
