@@ -1,0 +1,11 @@
+1. created s3 bucket
+2. uploaded files in s3 bucket
+3. enabled public access (test-environment only) by:
+	3a. disabling the default block public access (AWS protection against company data leaks)
+	3b. adding policy JSON via manual and/ policy generator
+4. uploading .html file
+5. changed settings of bucket to static website hosting
+6. enabled s3 versioning:
+	6a. uploaded multiple versions of index.html
+	6b. deleted a file (AWS adds a delete marker)
+	6c. restoring deleted file by deleting the delete marker
