@@ -42,7 +42,7 @@ Feel free to explore, fork, or contribute!
 ## 🤝 Connect
 
 Got feedback or want to collaborate?  
-Reach out via [LinkedIn](https://www.linkedin.com/in/kenneth-dungca-841403213/) or open an issue!
+Reach out via [LinkedIn] https://www.linkedin.com/in/kenneth-dungca-841403213/ or open an issue!
 Also you can check out my [Website] https://kennethdungca.free.nf/
 
 ---
