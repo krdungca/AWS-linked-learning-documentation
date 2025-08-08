@@ -9,3 +9,11 @@
 	6a. uploaded multiple versions of index.html
 	6b. deleted a file (AWS adds a delete marker)
 	6c. restoring deleted file by deleting the delete marker
+7. s3 replication
+	7a. created 2 buckets: 1 in ap-southeast-1, 1 in us-east-1
+	7b. bucket1 enabled features:
+		a. versioning
+		b. Management > Replication Rules
+			1. cross-region replication, target to bucket2 in us-east-1
+			2. selected [No] for replication of existing objects (Batch operations Job)
+	7c. test uploads in bucket1, test replications in bucket2, asynchronously replicated
