@@ -22,4 +22,5 @@
 	4k. DMS - database managed service - multidatabase migrations, allows active database migration (without shutting down source)
 		4k.1. Homogenous - same
 		4k.2. Heterogenous - different
+	4l. QLDB - financial immutable journal, crpto-verifiable (centralized)
 
