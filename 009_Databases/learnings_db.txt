@@ -1,0 +1,7 @@
+1. created free-tier RDS DB, mySQL
+	1a. created snapshot of the current RDS DB
+2. RDS deployments:
+	2a. Read Replica (max 15 replica), replica can read to app, but only main can be writted by app
+	2b. Multi-AZ (max 1 cross-az), failover in case of issues
+	2c. Multi-Region (cross region), apps in other region can only write to the main RDS (not the replica)
+3. 
