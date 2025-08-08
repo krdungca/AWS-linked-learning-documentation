@@ -4,4 +4,22 @@
 	2a. Read Replica (max 15 replica), replica can read to app, but only main can be writted by app
 	2b. Multi-AZ (max 1 cross-az), failover in case of issues
 	2c. Multi-Region (cross region), apps in other region can only write to the main RDS (not the replica)
-3. 
+3. created dynamoDB table in ap-southeast-1
+	3a. created partition key
+	3b. created attributes 
+	3c. conducted a simple query by using the partition key values
+4. other db and analytics:
+	4a. dynamodb acceleration (DAX) - inmem cache
+	4b. redshift (postgre) - for OLAP (analysis,columnar), not OLTP (transcations where relationdal db is better)
+	4c. EMR - elastic Map Reduce - for big data (Hadoop cluster), clusters of hundreds of EC2 instances
+	4d. Athena - s3 data analysis using SQL to query CSV, JSON, AVRO, Parquet
+	4e. Quicksight - serverless ML-powered BI, quick dashboard, ad-hoc changes
+	4f. DocumentDB - mongoDB noSQL, similar deployment as Aurora
+	4g. Neptune - for graphSQL, social networks, knowledge graphs (Wikipedia)
+	4h. Timestream - time-based data
+	4i. Managed Blockchain - decentralized transactions, hyperedge R fabric, Ethereum
+	4j. Glue - extract transform load (ETL) service, multi-source, can be linked to redshift for analytics
+	4k. DMS - database managed service - multidatabase migrations, allows active database migration (without shutting down source)
+		4k.1. Homogenous - same
+		4k.2. Heterogenous - different
+
