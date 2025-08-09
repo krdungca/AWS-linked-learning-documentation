@@ -1,0 +1,3 @@
+1. created a simple lambda function in aws
+2. deploy and ran code
+3. modified test runs and check logs in cloudwatch logs, log groups
