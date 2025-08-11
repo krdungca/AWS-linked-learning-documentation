@@ -1,0 +1,7 @@
+1. managed dns
+2. record types: A, AAAA, CNAME, Alias, MX, NS, plus others
+3. Routing policies:
+	3a. simple
+	3b. weighted
+	3c. latency
+	3d. failover

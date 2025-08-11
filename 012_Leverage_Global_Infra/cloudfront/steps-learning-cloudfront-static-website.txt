@@ -1,0 +1,11 @@
+1. created an S3 bucket
+2. uploaded website files (html and other sources)
+3. created a cloudfront distribution
+	3a. origin: s3 bucket of website
+	3b. checkedbox: allow private s3 bucket to access cloudfront
+	3c. default root object: index.html
+4. after distribution creation, copy cloudfront origin policy settngs:
+	4a. copy policy to s3 bucket policy
+	4b. check if properly applied
+5. deploy website
+6. (future) buy a domain and link to the cloudfront distribution domain name
