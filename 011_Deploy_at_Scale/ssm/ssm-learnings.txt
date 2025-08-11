@@ -2,6 +2,7 @@ Learnings:
 1. Session Manager, to manage fleet of EC2 instances and also on-prem
 2. Requires SSM agents to be installed on each device intended for SSM management
 3. Allows auto-deploy of code, commands, patches (and others) across the whole fleet
+4. SSM Parameter store, service of AWS to store config, secrets, API keys, can also be encrypted and with versioning
 
 Hands-on
 1. launch an EC2 instance with the following settings:
