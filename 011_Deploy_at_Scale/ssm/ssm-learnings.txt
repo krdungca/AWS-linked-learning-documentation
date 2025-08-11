@@ -1,0 +1,16 @@
+Learnings:
+1. Session Manager, to manage fleet of EC2 instances and also on-prem
+2. Requires SSM agents to be installed on each device intended for SSM management
+3. Allows auto-deploy of code, commands, patches (and others) across the whole fleet
+
+Hands-on
+1. launch an EC2 instance with the following settings:
+	1a. AMI: Amazon Linux 2
+	1b. SSH access is disabled
+	1c. No keypairs are used.
+	1d. Attached (or created) an IAM role with pemission policy in:
+		1d1.AmazonSSMManagedInstanceCore 
+2. using Session Manager:
+	2a. Created a session
+	2b. Selected the correct instance (instances with SSM agent installed should be listed in the Fleet Manager (List of Nodes)
+	2c. Secure shell access to the EC2 instance complete.
