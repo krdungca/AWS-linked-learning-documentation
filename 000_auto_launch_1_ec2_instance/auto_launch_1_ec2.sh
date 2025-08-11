@@ -1,6 +1,6 @@
 #!/bin/bash
 
-aws ec2 run-instances --image-id "ami-0d8ec96c89ad62005" \
+aws ec2 run-instances --image-id "ami-0061376a80017c383" \
 --instance-type "t2.micro" \
 --key-name "keypair3" \
 --network-interfaces '{"AssociatePublicIpAddress":true,"DeviceIndex":0,"Groups":["sg-0e06a029ee92ed487"]}' \
