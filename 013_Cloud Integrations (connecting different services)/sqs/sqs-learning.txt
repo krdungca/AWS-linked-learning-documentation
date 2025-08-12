@@ -1,0 +1,13 @@
+1. old aws service
+2. to decouple applications
+3. send, sqs queue, poll
+4. default retention: 4d -> max 14d
+
+hands-on
+1. created a demo-sqs
+2. sent 2 messages
+3. polled 2 messages
+4. deleted 2 messages from the queue
+5. deleted the demo-sqs
+
+
