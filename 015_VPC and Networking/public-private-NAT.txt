@@ -1,0 +1,6 @@
+1. created 2 subnets, 1 for public, 1 for private (public via NAT gateway)
+2. create 2 route-tables (1 for public attached to IGW),
+(1 for private, outbound via NAT gateway)
+3. successfully tested public connectivity
+4. reverse-ssh to private ec2 instance via the public EC2,
+successfully tested public connectivity, routing thru NAT gateway

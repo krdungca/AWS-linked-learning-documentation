@@ -1,0 +1,4 @@
+1. created an sns topic
+2. subscribed 2 subscribers: email and sms
+3. tested by publishing a message
+4. message/s are received by all the subscribers
