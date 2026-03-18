@@ -1,0 +1,166 @@
+0. preview of the architecture, let mentees download for reference
+
+1. create IAM users
+2. test CloudFormation
+3. test EC2, check if there's a public IP, which means we can connect to the instance since we can directly access a resource via the public IP thru the internet
+4. try to login to Web and DB servers via Instance Connect
+4a. first problem starts: 
+
+>> why it can't connect? what protocol do we use if we're remotely accessing Linux instances? 
+
+
+>> Lecture starts:
+
+>> image: OSI layer
+>> approach: either from top-bot, or bot-top
+>> we'll stick with bot-top
+>> explain briefly the purpose of layer 1-2, and why we dont worry much about this? 
+
+because AWS handles that for us, AWS ensures that the public internet can access all of the services (as long as permission is allowed)...
+
+
+>> now we'll focus more on layer 3,4, and 7
+
+>> layer 3 -> network layer --> involves IP addresses/ networks
+commands we use here: ping, traceroute
+
+>> layer 4 -> transport layer --> involves port numbers, TCP/UDP
+commands we use here: ss -tulnp | grep <port number>
+
+>> layer 7 -> application layer --> involves the data itself, many applications such as web (http/https), ftp, database (3306 MySQL), dns (53), ssh (22)
+
+commands we'll use in this lab --> curl <link or IP address>
+
+>> image of ec2-instances and how are they affected by security groups (diagram)
+
+>> if a security group is attached to an instance, and then nothing is allowed INBOUND, then no traffic will be able to communicate with that instance
+
+>> SLIDE ENDS (go back to lab)
+
+4b.  let's check the security group of the WebServer 
+
+>> what do you think is the reason why we cannot connect via EC2 Instance connect?
+
+>> if mentee's answer is correct, let that mentee modify the values of security group (ask if alam, if hindi, follow-nalang with me).. then ask everyone refresh page and if they can see the new entries on security group
+
+>> remember, to access a Linux instance/EC2, usually we employ SSH, and SSH is on port number 22
+
+>> everyone tests if they can login inside the webserver-instance
+
+>> everyone test ping www.google.com
+
+>> REPEAT on DB side, make sure that all mentees have connection to web and db servers via instance connect
+
+5. WebServer hosts a Website named Manila Store Dashboard, we can access it via the WebServer's public IP
+
+>> let's copy the public ip of webserver and open a new tab
+
+>> what does everyone see? does the page load?
+
+>> if not, what can be done? if mentee can answer, let him modify the security group, then ask everyone refresh page and if they can see the new entries on security group, else ask mentees, what protocol does websites use? Http/https, in which this should be added in the security group
+
+>> let's try to reload the webpage, did it load?
+
+>> if yes, congrats! we can now see the webpage
+
+>> however look, database cannot connect, how will we resolve this?
+
+
+6. image: architecture, look at the diagram, where is the database located?
+
+>> it's in a different VPC
+
+>> let's test if we can reach the database... let's find the database IP address, go to the WebServer instance connect, and then try to 
+
+ping <db-ip-address>
+
+>> did it work? why is it?
+
+>> image: ICMP: anong command kaya ang gumagamit nitong ICMP? if mentee identifies, ask, what should we do now? if correctly answered, allow him to execute
+
+>> assuming he went to the DB instance and modified allowed the incoming rule ICMP from IP address of web server, let everyone try to ping the database IP, did it work?
+
+>> let's try from the database side (login via EC2 instance connect), try to ping the IP address of WebServer, did it work?
+
+7. image: architecture, focus on VPC, recall, remember VPC's are Virtual Private Cloud, which are isolated resources, thus by default, VPCs cannot communicate by default to each other
+
+>> ask everyone, what do you think we must do? if a mentee correctly answers, allow him to execute, else guide everyone to the answer -> VPC peering
+
+>> VPC peering needs to have their network CIDR range nonoverlapping, meaning it cannot be both 10.0.0.0/16 on both sides... they must be different
+
+>> let's check the VPC of WebVPC --> what's the CIDR range?
+
+>> let's check the VPC of DataVPC --> what's the CIDR range?
+
+>> can we connect them by VPC peering? YES!
+
+>> slide ends
+
+8. execute the VPC peering, dont forget the tag: Limit:Demo ! it wont work (this is based from my deployed IAM policies)
+
+>> After creating, what do we see? there's a pending acceptance... meaning this must be accepted by the ACCEPTING side, it can be a different account, in this case, who is the accepter? it's us also!
+
+>> now, let's check if VPC Peering is active, check on Console
+
+>> now, let's try to ping again the DB from WEBserver, did it work?
+
+>> how about on the DB side, is it able to ping the Webserver?
+
+>> what now?
+
+9. image: return to the architecture... notice, where do we deploy the instances? in subnets... 
+
+recall, subnets must be associated to a maximum of 1 route table... ask everyone if they can remember route table, if none, try to explain by example on public subnet of webserver
+
+>> let's check the route table associated to the subnet of web server... does it have a route to the database?
+
+>> what do you think can be done? if mentee is able to answer, allow him to execute, and then ask everyone to check if they can see the change (route add), else teach/guide everyone
+
+>> now let's try to ping the database from web server, did it work? 
+
+>> now let's try to ping the web server from db, did it work?
+
+>> why do you think? do you think from the database VPC subnets does it have a route towards the Web VPC subnet? let's check
+
+>> no entries for return traffic right? let's add it
+
+>> now lets try to ping db from the webserver, did it work?
+
+>> let's try to ping webserver from db, did it work? why? 
+
+>> remember, webserver can ping the DB, but DB cannot ping webserver? meaning IP connectivity is okay, what's the issue here? what's blocking the db from pinging the webserver?
+
+if mentee identifies the SG, allow him to execute, then ask all mentees to check if they see the change
+
+>> everyone tries to ping the webserver, did it work? 
+
+>> finally it worked! 
+
+>> we can now conclude that connectivity (layer 3) works on both webserver and database
+
+>> lets check the website, what's the connection status? why is it failed?
+
+10. image: OSI, after conquering layer 3 problem, let's check layer 4, ports!
+>> what port do you think does MariaDB use? if mentees remember, then good, 3306
+
+>> so now, what should we check now? security group... what security group? DB security group
+
+>> currently, what does the DB security group allow inbound? do you think with this settings, can the web-application communicate properly with DB? what should be done? mentee execute if knows + everyone check changes, else recall the 3306 port
+
+>> let's check the website, does it load the table already? 
+
+>> congratulations! you have restored the connectivity of Manila Store website!
+
+>> well done mentees!
+
+>> okay, now let's do a clean-up,
+
+>> 1. VPC Peering + include the related routes
+
+>> 2. Delete the stack
+
+>> 3. All mentees, please log-out, i will now delete your IAM-accounts
+
+11. What are the thoughts, and lessons learned by mentees?
+
+
