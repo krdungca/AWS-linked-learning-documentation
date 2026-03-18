@@ -1,0 +1,16 @@
+{
+  "DataRouteTableId": "rtb-0eba752d389aadc9f",
+  "WebSGId": "sg-0902a61953c9a7b70",
+  "DataSubnetId": "subnet-039f47e855892882f",
+  "DBPrivateIP": "172.16.1.50",
+  "DataSGId": "sg-0fa908704227e1071",
+  "WebVPCId": "vpc-00083ce9a815d162c",
+  "WebRouteTableId": "rtb-093e5d4ba3a9664e2",
+  "WebURL": "http://44.221.46.37",
+  "DataInstanceId": "i-0668c12cd7cb73f51",
+  "WebSubnetId": "subnet-09a6cd53787065d91",
+  "DataIGWId": "igw-004a15622e38535df",
+  "DatabaseVPCId": "vpc-0313e1b5efeaece14",
+  "WebInstanceId": "i-01977ed2629b2df1e",
+  "WebIGWId": "igw-004adae592e53c633"
+}
