@@ -1,13 +1,1 @@
-1. add create X IAM-users, output username and password
-1a. group demo-group; create iam policy that allows execution only on resources that has tag Limit:Demo
-1b. Allowed executions: 
-	Security group actions
-	VPC-peering creation
-	Route-table modification
-	... (discover more as needed for restriction)
-
-2. modify cfn infra to create resources that has tag Limit:Demo; to safeguard my own personal infra
-
-3. create powerpoint for overview structure
-3a. plan discussion/session flow how to execute the KT smoothly
-
+1. create powerpoint from rough draft for ppt guideline
