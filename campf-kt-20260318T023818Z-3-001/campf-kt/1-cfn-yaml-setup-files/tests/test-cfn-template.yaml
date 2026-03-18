@@ -1,0 +1,160 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'Manila-Store Shared Lab: Collaborative VPC Troubleshooting (us-east-1)'
+
+Resources:
+  # --- VPC A: The "Cloud" (Web Server) ---
+  WebVPC:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: 10.0.0.0/16
+      EnableDnsSupport: true
+      EnableDnsHostnames: true
+      Tags: [{Key: Name, Value: ManilaStore-WebVPC}]
+
+  WebSubnet:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref WebVPC
+      CidrBlock: 10.0.1.0/24
+      MapPublicIpOnLaunch: true
+      Tags: [{Key: Name, Value: Web-Subnet}]
+
+  InternetGateway:
+    Type: AWS::EC2::InternetGateway
+
+  VPCGatewayAttachment:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      VpcId: !Ref WebVPC
+      InternetGatewayId: !Ref InternetGateway
+
+  WebRouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref WebVPC
+
+  DefaultRoute:
+    Type: AWS::EC2::Route
+    Properties:
+      RouteTableId: !Ref WebRouteTable
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId: !Ref InternetGateway
+
+  WebSubnetRouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref WebSubnet
+      RouteTableId: !Ref WebRouteTable
+
+  # --- VPC B: The "On-Prem" (DB Server) ---
+  DatabaseVPC:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: 172.16.0.0/16
+      EnableDnsSupport: true
+      EnableDnsHostnames: true
+      Tags: [{Key: Name, Value: ManilaStore-DataVPC}]
+
+  DataSubnet:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref DatabaseVPC
+      CidrBlock: 172.16.1.0/24
+      Tags: [{Key: Name, Value: Data-Subnet}]
+
+  DataRouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref DatabaseVPC
+
+  DataSubnetAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref DataSubnet
+      RouteTableId: !Ref DataRouteTable
+
+  # --- Shared EC2 Instances ---
+  WebServer:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: t2.micro
+      ImageId: 'ami-02dfbd4ff395f2a1b'
+      NetworkInterfaces:
+        - DeviceIndex: "0"
+          AssociatePublicIpAddress: "true"
+          SubnetId: !Ref WebSubnet
+          PrivateIpAddress: 10.0.1.10
+          GroupSet: [!Ref WebSG]
+      UserData:
+        Fn::Base64: |
+          #!/bin/bash
+          yum update -y
+          yum install -y httpd php php-mysqlnd
+          systemctl start httpd
+          systemctl enable httpd
+          cat <<EOF > /var/www/html/index.php
+          <?php
+          \$db_host = "172.16.1.50"; 
+          \$db_user = "web_user";
+          \$db_pass = "ManilaPassword123!";
+          \$db_name = "manila_store";
+          echo "<html><head><meta http-equiv='refresh' content='5'><style>body{font-family:sans-serif;text-align:center;padding:50px;}.on{color:green;}.off{color:red;}table{margin:20px auto;border-collapse:collapse;width:50%;}th,td{border:1px solid #ddd;padding:8px;}</style></head><body>";
+          echo "<h1>Manila-Store Dashboard</h1>";
+          \$conn = new mysqli(\$db_host, \$db_user, \$db_pass, \$db_name);
+          if (\$conn->connect_error) { echo "<p>Database Connectivity: <span class='off'>OFFLINE</span></p><p>Error: " . \$conn->connect_error . "</p>"; } 
+          else {
+              echo "<p>Database Connectivity: <span class='on'>ONLINE</span></p>";
+              \$result = \$conn->query("SELECT item_name, stock FROM inventory");
+              echo "<table><tr><th>Item</th><th>Stock</th></tr>";
+              while(\$row = \$result->fetch_assoc()) { echo "<tr><td>".\$row["item_name"]."</td><td>".\$row["stock"]."</td></tr>"; }
+              echo "</table>";
+          }
+          echo "</body></html>";
+          EOF
+
+  DatabaseServer:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: t2.micro
+      ImageId: 'ami-02dfbd4ff395f2a1b'
+      NetworkInterfaces:
+        - DeviceIndex: "0"
+          SubnetId: !Ref DataSubnet
+          PrivateIpAddress: 172.16.1.50
+          GroupSet: [!Ref DataSG]
+      UserData:
+        Fn::Base64: |
+          #!/bin/bash
+          yum update -y
+          yum install -y mariadb105-server
+          systemctl start mariadb
+          systemctl enable mariadb
+          mysql -e "CREATE DATABASE manila_store;"
+          mysql -e "CREATE TABLE manila_store.inventory (id INT AUTO_INCREMENT PRIMARY KEY, item_name VARCHAR(255), stock INT);"
+          mysql -e "INSERT INTO manila_store.inventory (item_name, stock) VALUES ('Laptop', 15), ('Mouse', 50), ('Keyboard', 30);"
+          mysql -e "CREATE USER 'web_user'@'10.0.%' IDENTIFIED BY 'ManilaPassword123!';"
+          mysql -e "GRANT SELECT ON manila_store.* TO 'web_user'@'10.0.%';"
+          mysql -e "FLUSH PRIVILEGES;"
+          sed -i 's/bind-address.*/bind-address = 0.0.0.0/' /etc/my.cnf.d/mariadb-server.cnf
+          systemctl restart mariadb
+
+  # --- The "Broken" Components ---
+  WebSG:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: 'FIX ME: Add HTTP Inbound'
+      VpcId: !Ref WebVPC
+
+  DataSG:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: 'FIX ME: Add MySQL (3306) Inbound'
+      VpcId: !Ref DatabaseVPC
+
+Outputs:
+  WebURL:
+    Description: URL to monitor for the lab
+    Value: !Sub http://${WebServer.PublicIp}
+  DBPrivateIP:
+    Description: Use this to test connectivity from Web Server
+    Value: 172.16.1.50

@@ -1,0 +1,12 @@
+{
+  "WEB_VPC_ID": "vpc-02e32e19d2af16efc",
+  "DB_VPC_ID": "vpc-0a8ec8d165451ea01",
+  "WEB_RT_ID": "rtb-0bc0daaefb4001bb4",
+  "DATA_RT_ID": "rtb-0c83c4ced3cda8ca7",
+  "WEB_SG_ID": "sg-022f8883b4a22bbd6",
+  "DATA_SG_ID": "sg-09a15aeb4e867a076",
+  "WEB_IP": "10.0.1.10",
+  "DB_INSTANCE_ID": "i-070902bc4ff465ba5",
+  "PEERING_ID": "pcx-01c83ae949788c6b0",
+  "IGW_ID": "igw-0cfa24a243f7fef4c"
+}
