@@ -18,7 +18,8 @@ echo "🚀 Deploying $STACK_NAME using $TEMPLATE_FILE..."
 aws cloudformation create-stack \
     --stack-name $STACK_NAME \
     --template-body file://$TEMPLATE_FILE \
-    --region $REGION
+    --region $REGION \
+    --tags Key=Limit,Value=Demo
 
 # 2. Wait for completion
 echo "⏳ Waiting for CREATE_COMPLETE (approx 3 mins)..."

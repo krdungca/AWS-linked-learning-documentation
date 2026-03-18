@@ -9,7 +9,9 @@ Resources:
       CidrBlock: 10.0.0.0/16
       EnableDnsSupport: true
       EnableDnsHostnames: true
-      Tags: [{Key: Name, Value: ManilaStore-WebVPC}]
+      Tags: 
+        - {Key: Name, Value: ManilaStore-WebVPC}
+        - {Key: Limit, Value: Demo}
 
   WebSubnet:
     Type: AWS::EC2::Subnet
@@ -17,10 +19,15 @@ Resources:
       VpcId: !Ref WebVPC
       CidrBlock: 10.0.1.0/24
       MapPublicIpOnLaunch: true
-      Tags: [{Key: Name, Value: Web-Subnet}]
+      Tags: 
+        - {Key: Name, Value: Web-Subnet}
+        - {Key: Limit, Value: Demo}
 
   WebInternetGateway:
     Type: AWS::EC2::InternetGateway
+    Properties:
+      Tags:
+        - {Key: Limit, Value: Demo}
 
   VPCGatewayAttachment:
     Type: AWS::EC2::VPCGatewayAttachment
@@ -32,6 +39,8 @@ Resources:
     Type: AWS::EC2::RouteTable
     Properties:
       VpcId: !Ref WebVPC
+      Tags:
+        - {Key: Limit, Value: Demo}
 
   DefaultRoute:
     Type: AWS::EC2::Route
@@ -53,17 +62,24 @@ Resources:
       CidrBlock: 172.16.0.0/16
       EnableDnsSupport: true
       EnableDnsHostnames: true
-      Tags: [{Key: Name, Value: ManilaStore-DataVPC}]
+      Tags: 
+        - {Key: Name, Value: ManilaStore-DataVPC}
+        - {Key: Limit, Value: Demo}
 
   DataSubnet:
     Type: AWS::EC2::Subnet
     Properties:
       VpcId: !Ref DatabaseVPC
       CidrBlock: 172.16.1.0/24
-      Tags: [{Key: Name, Value: Data-Subnet}]
+      Tags: 
+        - {Key: Name, Value: Data-Subnet}
+        - {Key: Limit, Value: Demo}
 
   DataInternetGateway:
     Type: AWS::EC2::InternetGateway
+    Properties:
+      Tags:
+        - {Key: Limit, Value: Demo}
 
   DataVPCGatewayAttachment:
     Type: AWS::EC2::VPCGatewayAttachment
@@ -75,7 +91,9 @@ Resources:
     Type: AWS::EC2::RouteTable
     Properties:
       VpcId: !Ref DatabaseVPC
-      Tags: [{Key: Name, Value: Data-RT}]
+      Tags: 
+        - {Key: Name, Value: Data-RT}
+        - {Key: Limit, Value: Demo}
 
   DataDefaultRoute:
     Type: AWS::EC2::Route
@@ -105,6 +123,8 @@ Resources:
       Tags:
         - Key: Name
           Value: Web-Server (WebVPC)
+        - Key: Limit
+          Value: Demo
       UserData:
         Fn::Base64: |
           #!/bin/bash
@@ -112,11 +132,10 @@ Resources:
           sudo yum install -y httpd php php-mysqlnd
           sudo systemctl start httpd
           sudo systemctl enable httpd
-
           cat <<'EOF' | sudo tee /var/www/html/index.php
           <?php
           mysqli_report(MYSQLI_REPORT_OFF);
-          $db_host = "172.16.1.50"; 
+          $db_host = "172.16.1.50";
           $db_user = "web_user";
           $db_pass = "ManilaPassword123!";
           $db_name = "manila_store";
@@ -154,8 +173,8 @@ Resources:
               $result = $conn->query("SELECT item_name, stock FROM inventory");
               if ($result) {
                   echo "<table><tr><th>Item</th><th>Stock</th></tr>";
-                  while($row = $result->fetch_assoc()) { 
-                      echo "<tr><td>".$row["item_name"]."</td><td>".$row["stock"]."</td></tr>"; 
+                  while($row = $result->fetch_assoc()) {
+                      echo "<tr><td>".$row["item_name"]."</td><td>".$row["stock"]."</td></tr>";
                   }
                   echo "</table>";
               }
@@ -171,15 +190,17 @@ Resources:
       ImageId: 'ami-02dfbd4ff395f2a1b'
       NetworkInterfaces:
         - DeviceIndex: "0"
-          AssociatePublicIpAddress: "true" # CRITICAL for dnf install to work
+          AssociatePublicIpAddress: "true"
           SubnetId: !Ref DataSubnet
           PrivateIpAddress: 172.16.1.50
           GroupSet: [!Ref DataSG]
       Tags:
         - Key: Name
           Value: Database-Server (DatabaseVPC)
+        - Key: Limit
+          Value: Demo
       UserData:
-        Fn::Base64: 
+        Fn::Base64:
           !Sub |
             #!/bin/bash
             exec > >(tee /var/log/user-data.log|logger -t user-data -s 2>/dev/console) 2>&1
@@ -207,45 +228,42 @@ Resources:
     Properties:
       GroupDescription: 'FIX ME: Add HTTP Inbound'
       VpcId: !Ref WebVPC
+      Tags:
+        - {Key: Limit, Value: Demo}
 
   DataSG:
     Type: AWS::EC2::SecurityGroup
     Properties:
       GroupDescription: 'FIX ME: Add MySQL (3306) Inbound'
       VpcId: !Ref DatabaseVPC
+      Tags:
+        - {Key: Limit, Value: Demo}
 
 Outputs:
-  # VPCs
   WebVPCId:
     Value: !Ref WebVPC
   DatabaseVPCId:
     Value: !Ref DatabaseVPC
-  # Subnets
   WebSubnetId:
     Value: !Ref WebSubnet
   DataSubnetId:
     Value: !Ref DataSubnet
-  # Gateways
   WebIGWId:
     Value: !Ref WebInternetGateway
   DataIGWId:
     Value: !Ref DataInternetGateway
-  # Route Tables
   WebRouteTableId:
     Value: !Ref WebRouteTable
-  DataRouteTableId: 
+  DataRouteTableId:
     Value: !Ref DataRouteTable
-  # Security Groups
   WebSGId:
     Value: !Ref WebSG
   DataSGId:
     Value: !Ref DataSG
-  # Instances
   WebInstanceId:
     Value: !Ref WebServer
   DataInstanceId:
     Value: !Ref DatabaseServer
-  # Useful Info
   WebURL:
     Value: !Sub "http://${WebServer.PublicIp}"
   DBPrivateIP:
